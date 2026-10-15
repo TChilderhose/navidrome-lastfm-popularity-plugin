@@ -1,0 +1,1 @@
+# navidrome-lastfm-popularity-plugin
