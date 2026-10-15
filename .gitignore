@@ -1,0 +1,5 @@
+*.wasm
+*.ndp
+tmp
+navidrome-lastfm-popularity
+navidrome-lastfm-popularity-plugin
