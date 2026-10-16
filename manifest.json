@@ -1,0 +1,115 @@
+{
+  "$schema": "https://raw.githubusercontent.com/navidrome/navidrome/refs/heads/master/plugins/manifest-schema.json",
+  "name": "Last.fm Popularity Rating",
+  "author": "Tyler Childerhose",
+  "version": "0.1.0",
+  "description": "Sets track star ratings from Last.fm popularity, ranking each track against the artist's most popular tracks",
+  "website": "https://github.com/TChilderhose/navidrome-lastfm-popularity-plugin",
+  "config": {
+    "schema": {
+      "type": "object",
+      "required": ["api_key"],
+      "properties": {
+        "api_key": {
+          "type": "string",
+          "title": "Last.fm API key",
+          "description": "Required for Last.fm API requests. Create an API key at https://www.last.fm/api/account/create."
+        },
+        "cron": {
+          "type": "string",
+          "title": "Schedule (cron)",
+          "description": "Cron schedule for library scans. A scan may stop at the 25-second run budget and resume on the next run.",
+          "default": "*/15 * * * *"
+        },
+        "batch_size": {
+          "type": "integer",
+          "title": "Songs per run",
+          "description": "Maximum songs processed per user per scan. Scans may stop sooner at the run budget and resume from the saved position.",
+          "minimum": 1,
+          "default": 500
+        },
+        "top_tracks_limit": {
+          "type": "integer",
+          "title": "Top tracks considered",
+          "description": "Maximum tracks requested from Last.fm's all-time artist top tracks. Ratings use listener-count percentiles within the returned list; tracks absent from a nonempty list get 0 stars. If no tracks are returned, ratings are unchanged.",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50
+        },
+        "cache_ttl_days": {
+          "type": "integer",
+          "title": "Cache duration (days)",
+          "description": "How long new Last.fm results are cached. Changing this does not alter existing cache expirations. Last.fm's artist top-track endpoint has no time-period parameter, so shorter caching does not provide recent-window data.",
+          "minimum": 1,
+          "maximum": 365,
+          "default": 30
+        },
+        "overwrite_existing": {
+          "type": "boolean",
+          "title": "Overwrite existing ratings",
+          "description": "Re-rate songs that already have a rating. With a nonempty Last.fm top-track list, absent songs are set to 0 stars; if no list is available, ratings are unchanged. Off: only unrated songs are processed.",
+          "default": false
+        },
+        "plexamp_mode": {
+          "type": "boolean",
+          "title": "Plexamp Mode (1 star for chart matches)",
+          "description": "Give 1 star to every track found in the artist's Last.fm top tracks instead of assigning 1-5 stars by listener-count percentile.",
+          "default": false
+        },
+        "verbose_logging": {
+          "type": "boolean",
+          "title": "Verbose logging",
+          "description": "Log listener counts, rating outcomes, and skip reasons for songs the plugin evaluates.",
+          "default": false
+        }
+      }
+    },
+    "uiSchema": {
+      "type": "VerticalLayout",
+      "elements": [
+        { "type": "Control", "scope": "#/properties/api_key" },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            { "type": "Control", "scope": "#/properties/top_tracks_limit" },
+            { "type": "Control", "scope": "#/properties/cache_ttl_days" }
+          ]
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            { "type": "Control", "scope": "#/properties/cron" },
+            { "type": "Control", "scope": "#/properties/batch_size" }
+          ]
+        },
+        {
+          "type": "HorizontalLayout",
+          "elements": [
+            { "type": "Control", "scope": "#/properties/overwrite_existing" },
+            { "type": "Control", "scope": "#/properties/plexamp_mode" }
+          ]
+        },
+        { "type": "Control", "scope": "#/properties/verbose_logging" }
+      ]
+    }
+  },
+  "permissions": {
+    "http": {
+      "reason": "Fetch Last.fm track listener counts",
+      "requiredHosts": ["ws.audioscrobbler.com"]
+    },
+    "kvstore": {
+      "reason": "Cache Last.fm results and remember scan progress",
+      "maxSize": "50MB"
+    },
+    "scheduler": {
+      "reason": "Process the library in periodic batches"
+    },
+    "subsonicapi": {
+      "reason": "List songs and set ratings through the Subsonic API"
+    },
+    "users": {
+      "reason": "Required by subsonicapi to act on behalf of users"
+    }
+  }
+}

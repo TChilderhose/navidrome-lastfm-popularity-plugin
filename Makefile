@@ -1,0 +1,32 @@
+SHELL := /usr/bin/env bash
+.PHONY: test build package clean
+
+PLUGIN_NAME := navidrome-lastfm-popularity-plugin
+WASM_FILE := plugin.wasm
+TINYGO := $(shell command -v tinygo 2> /dev/null)
+
+test:
+	go test -race ./...
+.PHONY: test
+
+build:
+ifdef TINYGO
+	tinygo build -opt=2 -scheduler=none -no-debug -o $(WASM_FILE) -target wasip1 -buildmode=c-shared .
+else
+	GOOS=wasip1 GOARCH=wasm go build -buildmode=c-shared -o $(WASM_FILE) .
+endif
+.PHONY: build
+
+package: build
+	zip $(PLUGIN_NAME).ndp $(WASM_FILE) manifest.json
+.PHONY: package
+
+clean:
+	rm -f $(WASM_FILE) $(PLUGIN_NAME).ndp
+.PHONY: clean
+
+release:
+	@if [[ ! "$${V}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$$ ]]; then echo "Usage: make release V=X.X.X [BETA=N]"; exit 1; fi
+	gh workflow run create-release.yml -f version=$${V} -f beta=$(BETA)
+	@echo "Release v$${V}$$(if [ -n "$(BETA)" ] && [ "$(BETA)" != "0" ]; then echo -beta-$(BETA); fi) workflow triggered. Check progress: gh run list --workflow=create-release.yml"
+.PHONY: release
