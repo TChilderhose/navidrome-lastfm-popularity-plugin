@@ -8,7 +8,9 @@
   "config": {
     "schema": {
       "type": "object",
-      "required": ["api_key"],
+      "required": [
+        "api_key"
+      ],
       "properties": {
         "api_key": {
           "type": "string",
@@ -67,36 +69,62 @@
     "uiSchema": {
       "type": "VerticalLayout",
       "elements": [
-        { "type": "Control", "scope": "#/properties/api_key" },
+        {
+          "type": "Control",
+          "scope": "#/properties/api_key"
+        },
         {
           "type": "HorizontalLayout",
           "elements": [
-            { "type": "Control", "scope": "#/properties/top_tracks_limit" },
-            { "type": "Control", "scope": "#/properties/cache_ttl_days" }
+            {
+              "type": "Control",
+              "scope": "#/properties/top_tracks_limit"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/cache_ttl_days"
+            }
           ]
         },
         {
           "type": "HorizontalLayout",
           "elements": [
-            { "type": "Control", "scope": "#/properties/cron" },
-            { "type": "Control", "scope": "#/properties/batch_size" }
+            {
+              "type": "Control",
+              "scope": "#/properties/cron"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/batch_size"
+            }
           ]
         },
         {
           "type": "HorizontalLayout",
           "elements": [
-            { "type": "Control", "scope": "#/properties/overwrite_existing" },
-            { "type": "Control", "scope": "#/properties/plexamp_mode" }
+            {
+              "type": "Control",
+              "scope": "#/properties/overwrite_existing"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/plexamp_mode"
+            }
           ]
         },
-        { "type": "Control", "scope": "#/properties/verbose_logging" }
+        {
+          "type": "Control",
+          "scope": "#/properties/verbose_logging"
+        }
       ]
     }
   },
   "permissions": {
     "http": {
       "reason": "Fetch Last.fm track listener counts",
-      "requiredHosts": ["ws.audioscrobbler.com"]
+      "requiredHosts": [
+        "ws.audioscrobbler.com"
+      ]
     },
     "kvstore": {
       "reason": "Cache Last.fm results and remember scan progress",
